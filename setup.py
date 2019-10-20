@@ -1,4 +1,5 @@
 import setuptools
+import atexit
 
 from setuptools.command.develop import develop
 from setuptools.command.install import install
@@ -11,18 +12,29 @@ class PostDevelopCommand(develop):
     """Post-installation for development mode."""
 
     def run(self):
-        # PUT YOUR POST-INSTALL SCRIPT HERE or CALL A FUNCTION
-        print('PACKAGE SUCCESSFULLY INSTALLED')
+        # here put preinstall actions
         develop.run(self)
+        # register postinstall actions
+
+        atexit.register(lambda: print('POSTINSTALL DEV ACTIONS'))
 
 
 class PostInstallCommand(install):
-    """Post-installation for installation mode."""
+    # another way to perform pre- and postinstall actions
+    # def __init__(self, *args, **kwargs):
+    #     super(PostInstallCommand, self).__init__(*args, **kwargs)
+    #     atexit.register(lambda: print('POSTINSTALL ACTIONS'))
 
     def run(self):
-        # PUT YOUR POST-INSTALL SCRIPT HERE or CALL A FUNCTION
-        print('PACKAGE SUCCESSFULLY INSTALLED2')
+        # here put preinstall actions
         install.run(self)
+        # register postinstall actions
+        atexit.register(lambda: print('POSTINSTALL ACTIONS'))
+
+    # self.custom()
+
+    def custom(self):
+        print('PACKAGE SUCCESSFULLY INSTALLED2')
 
 
 setuptools.setup(
@@ -45,7 +57,7 @@ setuptools.setup(
             'testpkg=testpkg.command_line:main'
         ]
     },
-    python_requires='>=3.5',
+    python_requires='>=3.5',  # maybe from 3.2?
     cmdclass={
         'develop': PostDevelopCommand,
         'install': PostInstallCommand,
@@ -66,4 +78,6 @@ python3 setup.py sdist bdist_wheel //package
 # 
 sudo pip3 install dist/testpkg-0.0.1.tar.gz //install local package
 
+
+https://realpython.com/command-line-interfaces-python-argparse/ //argparse docs
 """
